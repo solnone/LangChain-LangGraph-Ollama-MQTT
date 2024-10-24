@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "author": "Uri Shaked",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -56.16,
+      "left": -104.71,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 44.15,
+      "left": -109.51,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    { "type": "wokwi-servo", "id": "servo1", "top": 98.8, "left": 271.33, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.2", "led1:C", "black", [ "h-94.35", "v-3.1" ] ],
+    [ "led1:A", "r1:1", "green", [ "v0" ] ],
+    [ "r1:2", "esp:D13", "green", [ "h0.38", "v60.55" ] ],
+    [ "servo1:GND", "esp:GND.1", "black", [ "h0" ] ],
+    [ "servo1:V+", "esp:3V3", "red", [ "h0" ] ],
+    [ "servo1:PWM", "esp:D2", "orange", [ "h-29.66", "v-37.4" ] ]
+  ],
+  "dependencies": {}
+}
