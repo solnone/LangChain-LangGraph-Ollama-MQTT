@@ -23,10 +23,10 @@ MQTT_SERVER = "test.mosquitto.org"
 PORT = 1883
 CLIENTID = f'solomon_client_{random.randint(0, 100)}'
 
-SUBTOPIC_LED_CTL = "esp32-sol/LED_CTL" # used to control the light
-SUBTOPIC_DOOR_CTL = "esp32-sol/DOOR_CTL" # used to control the door
-SUBTOPIC_LED = "esp32-sol/LED" # used to get the state of the light
-SUBTOPIC_DOOR = "esp32-sol/DOOR" # used to get the state of the door
+SUBTOPIC_LED_CTL = "esp32-solomon/LED_CTL" # used to control the light
+SUBTOPIC_DOOR_CTL = "esp32-solomon/DOOR_CTL" # used to control the door
+SUBTOPIC_LED = "esp32-solomon/LED" # used to get the state of the light
+SUBTOPIC_DOOR = "esp32-solomon/DOOR" # used to get the state of the door
 
 FIRST_RECONNECT_DELAY = 1
 RECONNECT_RATE = 2
@@ -100,7 +100,7 @@ client = connect_mqtt()
 client.loop_start()
 
 MAX_RETRY = 3 # number of times to retry if the device state is unknown
-WAIT_PUBLISH = 1 # time to wait publishing
+WAIT_PUBLISH = 2 # time to wait publishing
 
 @tool
 def deviceState(device: Literal["light", "door"], retry_count: int = 0) -> str:
@@ -130,8 +130,9 @@ def deviceState(device: Literal["light", "door"], retry_count: int = 0) -> str:
             return "light is off"
         else:
             if retry_count < MAX_RETRY:
-                client.publish(SUBTOPIC_LED_CTL, "-1")
-                time.sleep(WAIT_PUBLISH)
+                if retry_count != -1:
+                    client.publish(SUBTOPIC_LED_CTL, "-1")
+                    time.sleep(WAIT_PUBLISH)
                 return deviceState(device, retry_count + 1)
             return "Unknown light state after multiple retries, please check manually."
     
@@ -141,8 +142,9 @@ def deviceState(device: Literal["light", "door"], retry_count: int = 0) -> str:
             return "door is open"
         elif state == -1:
             if retry_count < MAX_RETRY:
-                client.publish(SUBTOPIC_DOOR_CTL, "-1")
-                time.sleep(WAIT_PUBLISH)
+                if retry_count != -1:
+                    client.publish(SUBTOPIC_DOOR_CTL, "-1")
+                    time.sleep(WAIT_PUBLISH)
                 return deviceState(device, retry_count + 1)
             return "Unknown door state after multiple retries, please check manually."
         else:
@@ -169,6 +171,7 @@ def deviceControl(device: Literal["light", "door"], action: Literal["on", "off",
     
     # Control the device
     if device == "light" and action in {"on", "off"}:
+        deviceValues["light"] = -1
         if action == "on":
             client.publish(SUBTOPIC_LED_CTL, "1")
         elif action == "off":
@@ -176,6 +179,7 @@ def deviceControl(device: Literal["light", "door"], action: Literal["on", "off",
         else:
             return f"Invalid action '{action}' for device '{device}'"
     elif device == "door" and action in {"open", "close"}:
+        deviceValues["door"] = -1
         if action == "open":
             client.publish(SUBTOPIC_DOOR_CTL, "80")
         elif action == "close":

@@ -14,11 +14,11 @@ const char* password = "";
 // MQTT
 const char* mqtt_server = "test.mosquitto.org";
 
-const char* SUBTOPIC_LED_CTL = "esp32-sol/LED_CTL";
-const char* SUBTOPIC_DOOR_CTL = "esp32-sol/DOOR_CTL";
+const char* SUBTOPIC_LED_CTL = "esp32-solomon/LED_CTL";
+const char* SUBTOPIC_DOOR_CTL = "esp32-solomon/DOOR_CTL";
 
-const char* SUBTOPIC_LED = "esp32-sol/LED";
-const char* SUBTOPIC_DOOR = "esp32-sol/DOOR";
+const char* SUBTOPIC_LED = "esp32-solomon/LED";
+const char* SUBTOPIC_DOOR = "esp32-solomon/DOOR";
 
 
 WiFiClient espClient;
